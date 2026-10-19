@@ -1,14 +1,14 @@
 # Nuevo-Proyecto
-2. Creando proyecto
 
-## Préstamos de la biblioteca universitaria
+## Préstamos de la biblioteca universitaria (Programación de Computadores II - Examen 2 Corte)
 
-Aplicación de consola en Java (Scanner + menú), organizada en capas:
+Aplicación de consola en Java (menú + Scanner), proyecto de IntelliJ IDEA en la carpeta `parcial/`.
 
-- `biblioteca.modelo`: `Material`, `Libro`, `Revista`, `Usuario`, `Prestamo`
-- `biblioteca.repositorio`: `MaterialRepositorio`, `UsuarioRepositorio`, `PrestamoRepositorio` (ArrayList)
-- `biblioteca.servicio`: `BibliotecaServicio` (reglas de negocio)
-- `biblioteca.vista`: `Consola`, `MenuBiblioteca`
-- `biblioteca.Main`: punto de entrada
+Arquitectura en capas (`parcial/src/src`):
 
-Ejecutar: abrir la carpeta en IntelliJ IDEA (marcar `src` como Sources Root) y correr `biblioteca.Main`.
+- `entities`: `Library` (material), `Book`, `Magazine`, `User`, `Loan`
+- `repositories`: `LibraryRepository`, `UserRepository`, `LoanRepository` (ArrayList, CRUD)
+- `services`: `LibraryServices` (reglas de negocio)
+- `Main`: menú de consola
+
+Ejecutar: abrir la carpeta `parcial` en IntelliJ IDEA y correr `Main`.
