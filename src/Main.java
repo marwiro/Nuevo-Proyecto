@@ -1,8 +1,8 @@
-import service.EstudianteService;
-import view.Consola;
+import service.StudentService;
+import view.Console;
 
 public class Main {
     public static void main(String[] args) {
-        new Consola(new EstudianteService()).iniciar();
+        new Console(new StudentService()).start();
     }
 }

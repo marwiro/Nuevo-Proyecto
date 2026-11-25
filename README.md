@@ -5,17 +5,17 @@ Base para el taller guiado de JavaFX + POO. Estructura simple: 3 carpetas + `Mai
 ```
 src/
 ├── Main.java
-├── model/    Persona (abstracta), Estudiante
-├── service/  Crud<T> (interfaz), EstudianteService (lógica + datos en memoria)
-└── view/     Consola (en el taller se reemplaza por JavaFX)
+├── model/    Person (abstracta), Student
+├── service/  Crud<T> (interfaz), StudentService (lógica + datos en memoria)
+└── view/     Console (en el taller se reemplaza por JavaFX)
 ```
 
 ## Pilares de la POO
 
-- **Abstracción**: `Persona` (clase abstracta) e interfaz `Crud<T>`.
-- **Encapsulamiento**: atributos `private` con getters/setters; `listar()` devuelve una copia.
-- **Herencia**: `Estudiante extends Persona`.
-- **Polimorfismo**: `describir()` sobrescrito; `EstudianteService implements Crud<Estudiante>` y la vista solo conoce `Crud`.
+- **Abstracción**: `Person` (clase abstracta) e interfaz `Crud<T>`.
+- **Encapsulamiento**: atributos `private` con getters/setters; `findAll()` devuelve una copia.
+- **Herencia**: `Student extends Person`.
+- **Polimorfismo**: `describe()` sobrescrito; `StudentService implements Crud<Student>` y la vista solo conoce `Crud`.
 
 ## Ejecutar
 
