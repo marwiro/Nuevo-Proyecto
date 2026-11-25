@@ -1,100 +1,250 @@
 package view;
 
-import model.Student;
-import service.Crud;
-
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import model.Person;
+import model.Student;
+import model.Teacher;
+import service.StudentService;
+import service.TeacherService;
 
-/** Vista de consola. Solo pide datos y muestra resultados; la lógica está en el service. */
+// Vista: solo habla con el usuario. La lógica está en los service.
 public class Console {
 
-    private final Crud<Student> service;
-    private final Scanner input = new Scanner(System.in);
+    private StudentService studentService;
+    private TeacherService teacherService;
+    private Scanner scanner = new Scanner(System.in);
 
-    public Console(Crud<Student> service) {
-        this.service = service;
+    public Console(StudentService studentService, TeacherService teacherService) {
+        this.studentService = studentService;
+        this.teacherService = teacherService;
     }
 
     public void start() {
         int option = -1;
         while (option != 0) {
-            System.out.println("""
+            System.out.println();
+            System.out.println("===== MENÚ PRINCIPAL =====");
+            System.out.println("1. Estudiantes");
+            System.out.println("2. Profesores");
+            System.out.println("3. Ver todas las personas");
+            System.out.println("0. Salir");
+            option = readInt("Opción: ");
 
-                    ===== CRUD DE ESTUDIANTES =====
-                    1. Crear
-                    2. Listar
-                    3. Buscar por id
-                    4. Editar
-                    5. Eliminar
-                    0. Salir""");
-            try {
-                option = readInt("Opción: ");
-                switch (option) {
-                    case 1 -> create();
-                    case 2 -> list();
-                    case 3 -> System.out.println(service.findById(readInt("Id: ")));
-                    case 4 -> edit();
-                    case 5 -> remove();
-                    case 0 -> System.out.println("¡Hasta luego!");
-                    default -> System.out.println("Opción no válida");
-                }
-            } catch (IllegalArgumentException | NoSuchElementException ex) {
-                System.out.println("⚠ " + ex.getMessage());
+            if (option == 1) {
+                studentMenu();
+            } else if (option == 2) {
+                teacherMenu();
+            } else if (option == 3) {
+                showAllPeople();
+            } else if (option == 0) {
+                System.out.println("¡Hasta luego!");
+            } else {
+                System.out.println("Opción no válida");
             }
         }
     }
 
-    private void create() {
-        Student student = askData(0);
-        System.out.println("✔ Creado: " + service.create(student));
+    // POLIMORFISMO: una sola lista de Person con estudiantes y profesores.
+    // Al llamar describe(), cada objeto responde a su manera.
+    private void showAllPeople() {
+        ArrayList<Person> people = new ArrayList<Person>();
+        people.addAll(studentService.findAll());
+        people.addAll(teacherService.findAll());
+
+        if (people.size() == 0) {
+            System.out.println("No hay personas registradas");
+        }
+        for (int i = 0; i < people.size(); i++) {
+            System.out.println(people.get(i).describe());
+        }
     }
 
-    private void list() {
-        List<Student> students = service.findAll();
-        if (students.isEmpty()) System.out.println("No hay estudiantes registrados");
-        else students.forEach(System.out::println);
+    // ---------- ESTUDIANTES ----------
+
+    private void studentMenu() {
+        int option = -1;
+        while (option != 0) {
+            System.out.println();
+            System.out.println("--- ESTUDIANTES ---");
+            System.out.println("1. Crear");
+            System.out.println("2. Listar");
+            System.out.println("3. Buscar por id");
+            System.out.println("4. Editar");
+            System.out.println("5. Eliminar");
+            System.out.println("0. Volver");
+            option = readInt("Opción: ");
+
+            if (option == 1) {
+                createStudent();
+            } else if (option == 2) {
+                listStudents();
+            } else if (option == 3) {
+                Student student = studentService.findById(readInt("Id: "));
+                if (student == null) System.out.println("No existe ese estudiante");
+                else System.out.println(student.describe());
+            } else if (option == 4) {
+                editStudent();
+            } else if (option == 5) {
+                if (studentService.delete(readInt("Id a eliminar: "))) System.out.println("✔ Eliminado");
+                else System.out.println("No existe ese estudiante");
+            } else if (option != 0) {
+                System.out.println("Opción no válida");
+            }
+        }
     }
 
-    private void edit() {
-        int id = readInt("Id a editar: ");
-        System.out.println("Actual: " + service.findById(id));
-        System.out.println("✔ Actualizado: " + service.update(askData(id)));
-    }
-
-    private void remove() {
-        service.delete(readInt("Id a eliminar: "));
-        System.out.println("✔ Eliminado");
-    }
-
-    private Student askData(int id) {
-        String name = readLine("Nombre: ");
-        String lastName = readLine("Apellido: ");
-        String email = readLine("Email: ");
-        String major = readLine("Carrera: ");
+    private Student askStudent(int id) {
+        String name = readText("Nombre: ");
+        String lastName = readText("Apellido: ");
+        String email = readText("Email: ");
+        String major = readText("Carrera: ");
         double gpa = readDouble("Promedio (0-5): ");
         return new Student(id, name, lastName, email, major, gpa);
     }
 
-    private String readLine(String message) {
-        System.out.print(message);
-        return input.nextLine().trim();
-    }
-
-    private int readInt(String message) {
-        try {
-            return Integer.parseInt(readLine(message));
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Debes ingresar un número entero");
+    private void createStudent() {
+        Student student = askStudent(0);
+        String error = studentService.validate(student);
+        if (error.equals("")) {
+            studentService.create(student);
+            System.out.println("✔ Creado: " + student.describe());
+        } else {
+            System.out.println("⚠ " + error);
         }
     }
 
+    private void listStudents() {
+        ArrayList<Student> students = studentService.findAll();
+        if (students.size() == 0) {
+            System.out.println("No hay estudiantes registrados");
+        }
+        for (int i = 0; i < students.size(); i++) {
+            System.out.println(students.get(i).describe());
+        }
+    }
+
+    private void editStudent() {
+        int id = readInt("Id a editar: ");
+        Student current = studentService.findById(id);
+        if (current == null) {
+            System.out.println("No existe ese estudiante");
+            return;
+        }
+        System.out.println("Actual: " + current.describe());
+        Student student = askStudent(id);
+        String error = studentService.validate(student);
+        if (error.equals("")) {
+            studentService.update(student);
+            System.out.println("✔ Actualizado: " + student.describe());
+        } else {
+            System.out.println("⚠ " + error);
+        }
+    }
+
+    // ---------- PROFESORES ----------
+
+    private void teacherMenu() {
+        int option = -1;
+        while (option != 0) {
+            System.out.println();
+            System.out.println("--- PROFESORES ---");
+            System.out.println("1. Crear");
+            System.out.println("2. Listar");
+            System.out.println("3. Buscar por id");
+            System.out.println("4. Editar");
+            System.out.println("5. Eliminar");
+            System.out.println("0. Volver");
+            option = readInt("Opción: ");
+
+            if (option == 1) {
+                createTeacher();
+            } else if (option == 2) {
+                listTeachers();
+            } else if (option == 3) {
+                Teacher teacher = teacherService.findById(readInt("Id: "));
+                if (teacher == null) System.out.println("No existe ese profesor");
+                else System.out.println(teacher.describe());
+            } else if (option == 4) {
+                editTeacher();
+            } else if (option == 5) {
+                if (teacherService.delete(readInt("Id a eliminar: "))) System.out.println("✔ Eliminado");
+                else System.out.println("No existe ese profesor");
+            } else if (option != 0) {
+                System.out.println("Opción no válida");
+            }
+        }
+    }
+
+    private Teacher askTeacher(int id) {
+        String name = readText("Nombre: ");
+        String lastName = readText("Apellido: ");
+        String email = readText("Email: ");
+        String subject = readText("Materia: ");
+        return new Teacher(id, name, lastName, email, subject);
+    }
+
+    private void createTeacher() {
+        Teacher teacher = askTeacher(0);
+        String error = teacherService.validate(teacher);
+        if (error.equals("")) {
+            teacherService.create(teacher);
+            System.out.println("✔ Creado: " + teacher.describe());
+        } else {
+            System.out.println("⚠ " + error);
+        }
+    }
+
+    private void listTeachers() {
+        ArrayList<Teacher> teachers = teacherService.findAll();
+        if (teachers.size() == 0) {
+            System.out.println("No hay profesores registrados");
+        }
+        for (int i = 0; i < teachers.size(); i++) {
+            System.out.println(teachers.get(i).describe());
+        }
+    }
+
+    private void editTeacher() {
+        int id = readInt("Id a editar: ");
+        Teacher current = teacherService.findById(id);
+        if (current == null) {
+            System.out.println("No existe ese profesor");
+            return;
+        }
+        System.out.println("Actual: " + current.describe());
+        Teacher teacher = askTeacher(id);
+        String error = teacherService.validate(teacher);
+        if (error.equals("")) {
+            teacherService.update(teacher);
+            System.out.println("✔ Actualizado: " + teacher.describe());
+        } else {
+            System.out.println("⚠ " + error);
+        }
+    }
+
+    // ---------- LECTURA DE DATOS ----------
+
+    private String readText(String message) {
+        System.out.print(message);
+        return scanner.nextLine().trim();
+    }
+
+    // Si el usuario escribe algo que no es número, devuelve -1.
+    private int readInt(String message) {
+        try {
+            return Integer.parseInt(readText(message));
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    // Si no es número válido, devuelve -1 (el service lo marcará como error).
     private double readDouble(String message) {
         try {
-            return Double.parseDouble(readLine(message).replace(',', '.'));
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Debes ingresar un número válido");
+            return Double.parseDouble(readText(message).replace(",", "."));
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 }

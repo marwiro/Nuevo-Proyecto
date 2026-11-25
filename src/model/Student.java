@@ -1,22 +1,16 @@
 package model;
 
-/** HERENCIA (extends Person) + POLIMORFISMO (sobrescribe describe). */
+// HERENCIA: Student es una Person (extends), ya trae id, name, lastName y email.
 public class Student extends Person {
 
-    private int id;
     private String major;
     private double gpa;
 
-    public Student(int id, String name, String lastName, String email,
-                   String major, double gpa) {
-        super(name, lastName, email);
-        this.id = id;
+    public Student(int id, String name, String lastName, String email, String major, double gpa) {
+        super(id, name, lastName, email);
         this.major = major;
         this.gpa = gpa;
     }
-
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
 
     public String getMajor() { return major; }
     public void setMajor(String major) { this.major = major; }
@@ -24,12 +18,9 @@ public class Student extends Person {
     public double getGpa() { return gpa; }
     public void setGpa(double gpa) { this.gpa = gpa; }
 
-    @Override
+    // POLIMORFISMO: mismo método describe(), pero cada clase lo hace a su manera.
     public String describe() {
-        return String.format("[%d] %s | %s | %s | Promedio: %.2f",
-                id, getFullName(), getEmail(), major, gpa);
+        return "Estudiante [" + getId() + "] " + getName() + " " + getLastName()
+                + " | " + getEmail() + " | Carrera: " + major + " | Promedio: " + gpa;
     }
-
-    @Override
-    public String toString() { return describe(); }
 }
