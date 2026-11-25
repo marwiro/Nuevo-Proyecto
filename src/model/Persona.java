@@ -1,10 +1,6 @@
-package com.taller.estudiantes.model;
+package model;
 
-/**
- * PILARES: ABSTRACCIÓN + HERENCIA + ENCAPSULAMIENTO.
- * Clase abstracta que modela lo común a cualquier persona.
- * No se puede instanciar: solo tiene sentido a través de una subclase.
- */
+/** ABSTRACCIÓN + ENCAPSULAMIENTO: base común, no se puede instanciar. */
 public abstract class Persona {
 
     private String nombre;
@@ -17,7 +13,6 @@ public abstract class Persona {
         this.email = email;
     }
 
-    // Encapsulamiento: atributos privados, acceso por getters/setters.
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
@@ -27,10 +22,8 @@ public abstract class Persona {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getNombreCompleto() {
-        return nombre + " " + apellido;
-    }
+    public String getNombreCompleto() { return nombre + " " + apellido; }
 
-    /** Abstracción: cada subclase define cómo se describe. */
+    /** Cada subclase decide cómo se describe. */
     public abstract String describir();
 }

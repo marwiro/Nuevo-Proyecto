@@ -1,9 +1,6 @@
-package com.taller.estudiantes.model;
+package model;
 
-/**
- * PILARES: HERENCIA (extiende Persona), POLIMORFISMO (sobrescribe describir()),
- * ENCAPSULAMIENTO (atributos privados).
- */
+/** HERENCIA (extends Persona) + POLIMORFISMO (sobrescribe describir). */
 public class Estudiante extends Persona {
 
     private int id;
@@ -34,7 +31,5 @@ public class Estudiante extends Persona {
     }
 
     @Override
-    public String toString() {
-        return describir();
-    }
+    public String toString() { return describir(); }
 }

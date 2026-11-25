@@ -1,39 +1,25 @@
-# CRUD de Estudiantes en capas (Java 21)
+# CRUD de Estudiantes en capas (Java)
 
-Base para el taller guiado de JavaFX + POO. La UI actual es de consola; en el taller
-solo se reemplaza la capa `view` por JavaFX, el resto queda igual.
-
-## Arquitectura en capas
+Base para el taller guiado de JavaFX + POO. Estructura simple: 3 carpetas + `Main`.
 
 ```
-view  →  controller  →  service  →  repository  →  (datos)
-                  model (Persona, Estudiante) y exception se usan en todas
+src/
+├── Main.java
+├── model/    Persona (abstracta), Estudiante
+├── service/  Crud<T> (interfaz), EstudianteService (lógica + datos en memoria)
+└── view/     Consola (en el taller se reemplaza por JavaFX)
 ```
 
-| Capa | Paquete | Responsabilidad |
-|------|---------|-----------------|
-| Vista | `view` | Interacción con el usuario (consola; luego JavaFX) |
-| Controlador | `controller` | Recibe las acciones de la vista y delega |
-| Servicio | `service` | Reglas de negocio y validaciones |
-| Repositorio | `repository` | Almacenamiento (hoy en memoria) |
-| Modelo | `model` | Entidades del dominio |
+## Pilares de la POO
 
-## Pilares de la POO dónde verlos
-
-- **Abstracción**: `Persona` (clase abstracta), interfaces `Repositorio<T,ID>`, `EstudianteRepositorio`, `EstudianteServicio`.
-- **Encapsulamiento**: atributos `private` con getters/setters; copia defensiva en `listarTodos()`.
+- **Abstracción**: `Persona` (clase abstracta) e interfaz `Crud<T>`.
+- **Encapsulamiento**: atributos `private` con getters/setters; `listar()` devuelve una copia.
 - **Herencia**: `Estudiante extends Persona`.
-- **Polimorfismo**: `describir()` sobrescrito; `EstudianteRepositorioMemoria` intercambiable por otra implementación; el servicio solo conoce la interfaz.
+- **Polimorfismo**: `describir()` sobrescrito; `EstudianteService implements Crud<Estudiante>` y la vista solo conoce `Crud`.
 
 ## Ejecutar
 
 ```bash
-mvn compile exec:java -Dexec.mainClass=com.taller.estudiantes.Main
-# o sin Maven:
-javac -d out $(find src/main -name '*.java') && java -cp out com.taller.estudiantes.Main
+mkdir -p out && javac -cp out -d out $(find src -name "*.java")
+java -cp out Main
 ```
-
-## Para el taller (siguiente paso)
-
-Crear `view/EstudiantesApp.java` (JavaFX) que use `EstudianteControlador`, y ensamblarlo en `Main`
-igual que hoy se ensambla `ConsolaEstudiantes`.
